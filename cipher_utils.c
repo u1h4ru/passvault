@@ -5,7 +5,8 @@
 #include <openssl/buffer.h>
 
 /* ---------- Base64 工具 ---------- */
-char *base64_encode(const unsigned char *data, size_t len) {
+char *base64_encode(const unsigned char *data, size_t len) 
+{
     BIO *b64 = BIO_new(BIO_f_base64());
     BIO *mem = BIO_new(BIO_s_mem());
     BIO_push(b64, mem);
@@ -21,7 +22,8 @@ char *base64_encode(const unsigned char *data, size_t len) {
     return result;
 }
 
-unsigned char *base64_decode(const char *b64, size_t *len) {
+unsigned char *base64_decode(const char *b64, size_t *len) 
+{
     BIO *b64_bio = BIO_new(BIO_f_base64());
     BIO *mem = BIO_new_mem_buf(b64, -1);
     BIO_push(b64_bio, mem);
@@ -34,8 +36,8 @@ unsigned char *base64_decode(const char *b64, size_t *len) {
 }
 
 /* ---------- 密钥派生 ---------- */
-void derive_key(const char *password, const unsigned char *salt,
-                unsigned char *key) {
+void derive_key(const char *password, const unsigned char *salt, unsigned char *key)
+{
     PKCS5_PBKDF2_HMAC(password, strlen(password),
                       salt, 16,
                       100000,           // 迭代次数，越大越慢越安全
@@ -44,7 +46,8 @@ void derive_key(const char *password, const unsigned char *salt,
 }
 
 /* ---------- 加密 ---------- */
-char *encrypt(const char *plaintext, const char *master_password) {
+char *encrypt(const char *plaintext, const char *master_password) 
+{
     unsigned char salt[16];
     unsigned char iv[12];
     unsigned char key[32];
@@ -69,7 +72,7 @@ char *encrypt(const char *plaintext, const char *master_password) {
 
     /* 拼接: salt(16) + iv(12) + ciphertext + tag(16) */
     size_t total_len = 16 + 12 + pt_len + 16;
-    unsigned char *bundle = malloc(total_len);
+    unsigned char *bundle = malloc(total_len);  //
     memcpy(bundle, salt, 16);
     memcpy(bundle + 16, iv, 12);
     memcpy(bundle + 28, ciphertext, pt_len);
@@ -88,7 +91,8 @@ char *encrypt(const char *plaintext, const char *master_password) {
 }
 
 /* ---------- 解密 ---------- */
-char *decrypt(const char *b64_ciphertext, const char *master_password) {
+char *decrypt(const char *b64_ciphertext, const char *master_password) 
+{
     size_t bundle_len;
     unsigned char *bundle = base64_decode(b64_ciphertext, &bundle_len);
 
