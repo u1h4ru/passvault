@@ -3,6 +3,8 @@
 #include "file_io.h"
 #include <unistd.h>
 
+#define BUFFER_SIZE 255
+
 void print_usage_msg(char *argv[]);
 char* read_input_str();
 void remove_newline_char(char* str_buffer);
@@ -49,14 +51,15 @@ int main(int argc, char *argv[])
     if (e_flag) {  // encrypt
         printf("input the password: ");
         char* password = read_input_str();
-        printf("%s", password);
+        printf("input content: %s\n", password);
         
         printf("input the master password: ");
         char* master_pw = read_input_str();
-        printf("%s", master_pw);
+        printf("input content: %s\n", master_pw);
 
         char *encrypted_str = encrypt(password, master_pw);
         printf("encrypted text: %s\n", encrypted_str);
+        
         write_cipher_to_file(filename, encrypted_str);
        
         free(password);
@@ -92,8 +95,8 @@ void print_usage_msg(char *argv[])
 
 char* read_input_str()
 {
-    char* buffer = malloc(sizeof(char) * 255);
-    if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+    char* buffer = malloc(BUFFER_SIZE);
+    if (fgets(buffer, BUFFER_SIZE, stdin) != NULL) {
         remove_newline_char(buffer);
     }
     return buffer;
