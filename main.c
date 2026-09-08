@@ -51,12 +51,11 @@ int main(int argc, char *argv[])
     if (e_flag) {  // encrypt
         printf("input the password: ");
         char* password = read_input_str();
-        printf("input content: %s\n", password);
         
         printf("input the master password: ");
         char* master_pw = read_input_str();
-        printf("input content: %s\n", master_pw);
 
+        printf("-------------------------------------------------------------------------------------\n");
         char *encrypted_str = encrypt(password, master_pw);
         printf("encrypted text: %s\n", encrypted_str);
         
@@ -65,12 +64,12 @@ int main(int argc, char *argv[])
         free(password);
         free(master_pw);
     } else {  // decrypt
-        printf("input the master password: ");
-        char* master_pw = read_input_str();
-        printf("%s", master_pw);
-            
         char *encrypted_str = read_cipher_from_file(filename);
         printf("encrypted text: %s\n", encrypted_str);
+        
+        printf("input the master password: ");
+        char* master_pw = read_input_str();
+            
         char *decrypted_str = decrypt(encrypted_str, master_pw);
         free(encrypted_str);
         
