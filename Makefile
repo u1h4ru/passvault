@@ -1,4 +1,3 @@
-
 passvault: cipher_utils.o main.o file_io.o
 	gcc -o passvault  cipher_utils.o main.o file_io.o  -lssl -lcrypto
 

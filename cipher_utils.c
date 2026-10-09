@@ -4,7 +4,7 @@
 #include <openssl/bio.h>
 #include <openssl/buffer.h>
 
-/* ---------- Base64 工具 ---------- */
+/* ---------- Base64 utils ---------- */
 char *base64_encode(const unsigned char *data, size_t len) 
 {
     BIO *b64 = BIO_new(BIO_f_base64());
@@ -45,7 +45,7 @@ void derive_key(const char *password, const unsigned char *salt, unsigned char *
                       32, key);         // 输出 32 字节 = AES-256
 }
 
-/* ---------- 加密 ---------- */
+/* ---------- encrypt ---------- */
 char *encrypt(const char *plaintext, const char *master_password) 
 {
     unsigned char salt[16];
@@ -70,7 +70,7 @@ char *encrypt(const char *plaintext, const char *master_password)
     EVP_EncryptFinal_ex(ctx, ciphertext + outlen, &outlen);
     EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, 16, tag);
 
-    /* 拼接: salt(16) + iv(12) + ciphertext + tag(16) */
+    // spice: salt(16) + iv(12) + ciphertext + tag(16)
     size_t total_len = 16 + 12 + pt_len + 16;
     unsigned char *bundle = malloc(total_len);  //
     memcpy(bundle, salt, 16);
@@ -78,9 +78,10 @@ char *encrypt(const char *plaintext, const char *master_password)
     memcpy(bundle + 28, ciphertext, pt_len);
     memcpy(bundle + 28 + pt_len, tag, 16);
 
+    // base64 encode 
     char *b64 = base64_encode(bundle, total_len);
 
-    /* 清理内存 */
+    // clear the memory
     OPENSSL_cleanse(key, 32);
     OPENSSL_cleanse(ciphertext, pt_len);
     free(ciphertext);
@@ -90,10 +91,12 @@ char *encrypt(const char *plaintext, const char *master_password)
     return b64;
 }
 
-/* ---------- 解密 ---------- */
+/* ---------- decrypt ---------- */
 char *decrypt(const char *b64_ciphertext, const char *master_password) 
 {
     size_t bundle_len;
+
+    // base64 decode
     unsigned char *bundle = base64_decode(b64_ciphertext, &bundle_len);
 
     if (bundle_len < 44) { // 16+12+16 最小长度
